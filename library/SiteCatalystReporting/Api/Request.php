@@ -10,6 +10,7 @@
 namespace SiteCatalystReporting\Api;
 
 use SiteCatalystReporting\Config;
+use SiteCatalystReporting\SimpleRestClient;
 
 class Request
 {
@@ -27,9 +28,15 @@ class Request
     public $nonce_ts;
     public $digest;
 
+    public $client;
+
+    public $status_code;
+    public $response;
+    public $info;
+
     public function __construct()
     {
-
+        $this->client = new SimpleRestClient();
     }
 
     public function setConfig($config)
@@ -72,6 +79,28 @@ class Request
         $this->nonce = md5(uniqid(php_uname('n'), true));
         $this->nonce_ts = date('c');
         $this->digest = base64_encode(sha1($this->nonce.$this->nonce_ts.$this->config->secret));
+    }
+
+    public function buildHeaders()
+    {
+        $this->client->setOption(CURLOPT_HTTPHEADER, array("X-WSSE: UsernameToken Username=\"{$this->config->username}\", PasswordDigest=\"{$this->digest}\", Nonce=\"{$this->nonce}\", Created=\"{$this->nonce_ts}\""));
+    }
+
+    /**
+     * @return Response
+     */
+    public function send()
+    {
+        $this->buildNonce();
+        $this->buildHeaders();
+        $json = json_encode($this->dataObj);
+
+        $this->client->postWebRequest($this->config->server.$this->config->path.'?method='.$this->method, $json);
+
+        $factory = new ResponseFactory();
+        $response = $factory->buildResponseFromClient($this->client);
+
+        return $response;
     }
 
 
