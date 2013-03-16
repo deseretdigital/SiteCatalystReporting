@@ -21,6 +21,7 @@ class Request
     public $config;
 
     public $method;
+    public $dataObj;
 
     public $nonce;
     public $nonce_ts;
@@ -54,6 +55,16 @@ class Request
         }
 
         $this->method = $method;
+    }
+
+    public function setDataObject($obj)
+    {
+        if(!is_object($obj) && !is_array($obj))
+        {
+            throw new \Exception("Invalid Data Object, Expecting Object or Array");
+        }
+
+        $this->dataObj = $obj;
     }
 
     public function buildNonce()

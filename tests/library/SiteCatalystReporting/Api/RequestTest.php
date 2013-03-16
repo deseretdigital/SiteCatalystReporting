@@ -76,6 +76,38 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public static function providerSetDataObject()
+    {
+        return array(
+            array("1", false), // First Param is value, second param is if it should succeed or not
+            array("string", false),
+            array(null, false),
+            array(false, false),
+            array(true, false),
+            array(array("string"), true),
+            array(new \stdClass(), true),
+        );
+    }
+
+    /**
+     * @dataProvider providerSetDataObject
+     */
+    public function testSetDataObject($val, $succeed)
+    {
+        if(!$succeed)
+        {
+            $this->setExpectedException('Exception');
+        }
+
+        $request = new Request();
+        $request->setDataObject($val);
+
+        if($succeed)
+        {
+            $this->assertEquals($val, $request->dataObj);
+        }
+    }
+
     public function testBuildNonce()
     {
         $mock_config = \Mockery::mock('SiteCatalystReporting\Config[validate]', array('validate' => true));
