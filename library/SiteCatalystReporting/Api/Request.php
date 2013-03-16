@@ -13,10 +13,18 @@ use SiteCatalystReporting\Config;
 
 class Request
 {
+    const METHOD_Report_QueueTrended = 'Report.QueueTrended';
+
     /**
-     * @var SiteCatalystReporting\Config
+     * @var Config
      */
     public $config;
+
+    public $method;
+
+    public $nonce;
+    public $nonce_ts;
+    public $digest;
 
     public function __construct()
     {
@@ -32,4 +40,28 @@ class Request
         $config->validate();
         $this->config = $config;
     }
+
+    public function setMethod($method)
+    {
+        if(!is_string($method))
+        {
+            throw new \Exception("Invalid Method Name");
+        }
+
+        if(stripos($method, '.') === false)
+        {
+            throw new \Exception("Invalid Method Name, Missing \".\", Expecting Group.MethodName");
+        }
+
+        $this->method = $method;
+    }
+
+    public function buildNonce()
+    {
+        $this->nonce = md5(uniqid(php_uname('n'), true));
+        $this->nonce_ts = date('c');
+        $this->digest = base64_encode(sha1($this->nonce.$this->nonce_ts.$this->config->secret));
+    }
+
+
 }
