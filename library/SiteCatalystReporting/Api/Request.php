@@ -23,6 +23,7 @@ class Request
 
     public $method;
     public $dataObj;
+    public $json;
 
     public $nonce;
     public $nonce_ts;
@@ -64,16 +65,6 @@ class Request
         $this->method = $method;
     }
 
-    public function setDataObject($obj)
-    {
-        if(!is_object($obj) && !is_array($obj))
-        {
-            throw new \Exception("Invalid Data Object, Expecting Object or Array");
-        }
-
-        $this->dataObj = $obj;
-    }
-
     public function buildNonce()
     {
         $this->nonce = md5(uniqid(php_uname('n'), true));
@@ -93,9 +84,17 @@ class Request
     {
         $this->buildNonce();
         $this->buildHeaders();
-        $json = json_encode($this->dataObj);
+        if($this->json)
+        {
+            $json = $this->json;
+        }
+        else
+        {
+            $json = json_encode($this->dataObj);
+        }
 
-        $this->client->postWebRequest($this->config->server.$this->config->path.'?method='.$this->method, $json);
+
+        $this->client->postWebRequest($this->config->server.$this->config->path.'?method='.$this->method, $this->json);
 
         $factory = new ResponseFactory();
         $response = $factory->buildResponseFromClient($this->client);

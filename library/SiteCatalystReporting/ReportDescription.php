@@ -23,9 +23,30 @@ class ReportDescription
 
     public $config;
 
+    public function toJson()
+    {
+        $obj = new \stdClass();
+
+        $exclude_members = array('config');
+
+        foreach($this as $k => $v)
+        {
+            if(!in_array($k, $exclude_members))
+            {
+                $obj->$k = $v;
+            }
+        }
+
+        $final = new \stdClass();
+        $final->reportDescription = $obj;
+
+        return json_encode($final);
+    }
+
     public function setConfig(Config $config)
     {
         $this->config = $config;
+        $this->reportSuiteID = $config->reportSuiteId;
     }
 
     public function addMetric(ReportMetric $metric)
