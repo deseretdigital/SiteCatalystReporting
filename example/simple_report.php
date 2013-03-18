@@ -40,6 +40,11 @@ $metric->id = ReportMetric::METRIC_pageViews;
 
 $description->addMetric($metric);
 
+$metric = new ReportMetric();
+$metric->id = ReportMetric::METRIC_totalPageViews;
+
+$description->addMetric($metric);
+
 $report->setDescription($description);
 
 $data = $report->run();

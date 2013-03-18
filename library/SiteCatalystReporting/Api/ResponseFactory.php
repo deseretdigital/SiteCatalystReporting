@@ -24,7 +24,6 @@ class ResponseFactory
         $response->status_code      = $client->getStatusCode();
         $response->info             = $client->getInfo();
         $response->response_str     = $client->getWebResponse();
-        echo "\n".$response->response_str."\n";
 
         return $response;
     }

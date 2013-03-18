@@ -13,8 +13,19 @@ class ReportData
 {
     public $json;
 
+
     public function __construct($json = null)
     {
         $this->json = $json;
+        if($this->json)
+        {
+            $this->processData();
+        }
     }
+
+    public function processData()
+    {
+        
+    }
+
 }
