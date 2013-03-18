@@ -25,7 +25,7 @@ class ReportData
 
     public function processData()
     {
-        
+
     }
 
 }
